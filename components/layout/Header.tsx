@@ -11,14 +11,19 @@ import { cn } from "@/lib/utils";
 import { ModeToggle } from "@/components/theme/ModeToggle";
 import MobileNav from "./MobileNav";
 import CartDrawer from "../cart/CartDrawer";
+import LoginModal from "../ui/LoginModel";
+import { useRedux } from "@/hooks/useSelect";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const pathname = usePathname();
   const { cartItems } = useCart();
+
+  const { selector } = useRedux();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,9 +35,7 @@ const Header = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle search logic here
     console.log("Searching for:", searchQuery);
-    // You can redirect to search page or filter products
     setIsSearchOpen(false);
   };
 
@@ -40,7 +43,6 @@ const Header = () => {
     { label: "Home", href: "/" },
     { label: "Shop", href: "/products" },
     { label: "Categories", href: "/categories" },
-    // { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ];
 
@@ -49,75 +51,17 @@ const Header = () => {
       className={cn(
         "sticky top-0 z-50 transition-all duration-300",
         isScrolled
-          ? "bg-background/80 backdrop-blur-md border-b shadow-sm"
-          : "bg-transparent"
+          ? "bg-background/90 backdrop-blur-md border-b shadow-sm"
+          : "bg-background/80"
       )}
     >
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="font-semibold text-xl">
-          LUXEMART
-        </Link>
-
-        <nav className="hidden md:flex items-center space-x-8">
-          {navItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname === item.href
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex items-center space-x-4">
-          {/* SEARCH BUTTON */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative"
-            onClick={() => setIsSearchOpen(true)}
-          >
-            <Search className="h-5 w-5" />
-            <span className="sr-only">Search</span>
-          </Button>
-
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/wishlist">
-              <Heart className="h-5 w-5" />
-              <span className="sr-only">Wishlist</span>
-            </Link>
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative"
-            onClick={() => setIsCartOpen(true)}
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {cartItems.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
-                {cartItems.length}
-              </span>
-            )}
-            <span className="sr-only">Cart</span>
-          </Button>
-
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/account">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Account</span>
-            </Link>
-          </Button>
-
-          <ModeToggle />
-
+        {/* Mobile Menu Button (left side) */}
+        <div className="flex md:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -125,16 +69,112 @@ const Header = () => {
                 <span className="sr-only">Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="pr-0">
+            <SheetContent side="left" className="pr-0">
               <MobileNav navItems={navItems} />
             </SheetContent>
           </Sheet>
         </div>
+
+        {/* Logo (centered on mobile) */}
+        <Link
+          href="/"
+          className="font-bold text-xl md:text-2xl tracking-tight flex-1 md:flex-none text-center md:text-left"
+        >
+          <span className="text-primary">Ecom</span>Store
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 mx-8">
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary relative group",
+                pathname === item.href
+                  ? "text-primary"
+                  : "text-muted-foreground"
+              )}
+            >
+              {item.label}
+              <span
+                className={cn(
+                  "absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full",
+                  pathname === item.href ? "w-full" : ""
+                )}
+              />
+            </Link>
+          ))}
+        </nav>
+
+        {/* Action Buttons */}
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          {/* Search Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden sm:inline-flex"
+            onClick={() => setIsSearchOpen(true)}
+          >
+            <Search className="h-[1.2rem] w-[1.2rem]" />
+            <span className="sr-only">Search</span>
+          </Button>
+
+          {/* Wishlist */}
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/wishlist">
+              <Heart className="h-[1.2rem] w-[1.2rem]" />
+              <span className="sr-only">Wishlist</span>
+            </Link>
+          </Button>
+
+          {/* Cart with badge */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            onClick={() => setIsCartOpen(true)}
+          >
+            <ShoppingCart className="h-[1.2rem] w-[1.2rem]" />
+            {cartItems.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                {cartItems.length > 9 ? "9+" : cartItems.length}
+              </span>
+            )}
+            <span className="sr-only">Cart</span>
+          </Button>
+
+          {/* Account */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden sm:inline-flex"
+            asChild
+          >
+            <Link href="/account">
+              <User className="h-[1.2rem] w-[1.2rem]" />
+              <span className="sr-only">Account</span>
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden sm:inline-flex"
+            onClick={() => setIsLoginModalOpen(true)}
+          >
+            <span className="sr-only">User account</span>
+            <User className="h-5 w-5" />
+          </Button>
+
+          {/* Theme Toggle */}
+          <ModeToggle />
+        </div>
       </div>
 
+      {/* Cart Drawer */}
       <CartDrawer isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
 
-      {/* IMPROVED SEARCH OVERLAY */}
+      {/* Search Overlay */}
       {isSearchOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center pt-20 px-4">
           <div className="bg-background rounded-xl shadow-2xl w-full max-w-2xl animate-in fade-in-90 slide-in-from-top-10">
@@ -147,7 +187,7 @@ const Header = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search for products, brands, categories..."
-                    className="w-full pl-12 pr-12 py-3 text-lg border-none bg-transparent focus:outline-none focus:ring-0"
+                    className="w-full pl-12 pr-12 py-3 text-lg border-none bg-transparent focus:outline-none focus:ring-0 placeholder:text-muted-foreground/60"
                     autoFocus
                   />
                   <button
@@ -160,12 +200,33 @@ const Header = () => {
                 </div>
               </form>
 
-              {/* Search suggestions/results can go here */}
-              {/* <div className="border-t p-4">
-                <p className="text-sm text-muted-foreground">
-                  Try searching for "shoes", "watches", or "accessories"
-                </p>
-              </div> */}
+              {/* Optional search suggestions */}
+              <div className="border-t p-4 hidden sm:block">
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs text-muted-foreground">Try:</span>
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("Sneakers")}
+                    className="text-xs px-3 py-1 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+                  >
+                    Sneakers
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("Watches")}
+                    className="text-xs px-3 py-1 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+                  >
+                    Watches
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("Accessories")}
+                    className="text-xs px-3 py-1 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+                  >
+                    Accessories
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

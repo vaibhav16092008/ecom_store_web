@@ -6,20 +6,20 @@ import ProductsHeader from "@/components/products/ProductsHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {
-  title: "All Products | Luxemart",
-  description: "Browse our collection of premium products at Luxemart",
+  title: "All Products | EcomStore",
+  description: "Browse our collection of premium products at EcomStore",
 };
 
 export default function ProductsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <ProductsHeader title="All Products" productCount={100} />
-      
+
       <div className="flex flex-col md:flex-row gap-8">
         <aside className="w-full md:w-64 shrink-0">
           <ProductFilters />
         </aside>
-        
+
         <div className="flex-grow">
           <Suspense fallback={<ProductGridSkeleton />}>
             <ProductGrid />
