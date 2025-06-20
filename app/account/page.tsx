@@ -272,7 +272,7 @@ const AccountPage = () => {
                               Premium Leather Crossbody Bag
                             </p>
                             <p className="text-sm text-muted-foreground mb-2">
-                              Luxemart
+                              EcomStore
                             </p>
                             <p className="font-medium">$161.49</p>
                             <p className="text-sm text-muted-foreground line-through">

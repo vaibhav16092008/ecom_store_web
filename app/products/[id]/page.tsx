@@ -21,12 +21,12 @@ export function generateMetadata({ params }: ProductPageProps) {
 
   if (!product) {
     return {
-      title: "Product Not Found | Luxemart",
+      title: "Product Not Found | EcomStore",
     };
   }
 
   return {
-    title: `${product.name} | Luxemart`,
+    title: `${product.name} | EcomStore`,
     description: product.description,
   };
 }

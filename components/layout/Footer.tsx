@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+} from "lucide-react";
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -10,24 +18,37 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">LUXEMART</h3>
+            <h3 className="text-lg font-semibold">EcomStore</h3>
             <p className="text-muted-foreground text-sm">
-              Premium shopping experience for the modern consumer. Quality products, exceptional service.
+              Premium shopping experience for the modern consumer. Quality
+              products, exceptional service.
             </p>
             <div className="flex space-x-4 pt-2">
-              <Link href="#" className="text-muted-foreground hover:text-primary">
+              <Link
+                href="#"
+                className="text-muted-foreground hover:text-primary"
+              >
                 <Facebook className="h-5 w-5" />
                 <span className="sr-only">Facebook</span>
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary">
+              <Link
+                href="#"
+                className="text-muted-foreground hover:text-primary"
+              >
                 <Twitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary">
+              <Link
+                href="#"
+                className="text-muted-foreground hover:text-primary"
+              >
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary">
+              <Link
+                href="#"
+                className="text-muted-foreground hover:text-primary"
+              >
                 <Linkedin className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </Link>
@@ -39,27 +60,42 @@ const Footer = () => {
             <h3 className="text-lg font-semibold">Shopping</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/products" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="/products"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   All Products
                 </Link>
               </li>
               <li>
-                <Link href="/categories" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="/categories"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   Categories
                 </Link>
               </li>
               <li>
-                <Link href="/deals" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="/deals"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   Deals & Offers
                 </Link>
               </li>
               <li>
-                <Link href="/new-arrivals" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="/new-arrivals"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   New Arrivals
                 </Link>
               </li>
               <li>
-                <Link href="/bestsellers" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="/bestsellers"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   Bestsellers
                 </Link>
               </li>
@@ -71,27 +107,42 @@ const Footer = () => {
             <h3 className="text-lg font-semibold">Account</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/account" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="/account"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   My Account
                 </Link>
               </li>
               <li>
-                <Link href="/account/orders" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="/account/orders"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   Order History
                 </Link>
               </li>
               <li>
-                <Link href="/wishlist" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="/wishlist"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   Wishlist
                 </Link>
               </li>
               <li>
-                <Link href="/account/settings" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="/account/settings"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   Account Settings
                 </Link>
               </li>
               <li>
-                <Link href="/returns" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="/returns"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   Returns & Refunds
                 </Link>
               </li>
@@ -110,14 +161,20 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-5 w-5 text-muted-foreground" />
-                <Link href="tel:+1-800-555-0123" className="text-muted-foreground hover:text-primary">
+                <Link
+                  href="tel:+1-800-555-0123"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   +1-800-555-0123
                 </Link>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-5 w-5 text-muted-foreground" />
-                <Link href="mailto:support@luxemart.com" className="text-muted-foreground hover:text-primary">
-                  support@luxemart.com
+                <Link
+                  href="mailto:support@EcomStore.com"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  support@EcomStore.com
                 </Link>
               </li>
             </ul>
@@ -127,7 +184,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">
-            © {year} LUXEMART. All rights reserved.
+            © {year} EcomStore. All rights reserved.
           </p>
           <div className="flex flex-wrap gap-4 mt-4 md:mt-0 text-sm text-muted-foreground">
             <Link href="/privacy-policy" className="hover:text-primary">
