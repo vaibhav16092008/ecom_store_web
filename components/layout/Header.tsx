@@ -22,7 +22,6 @@ const Header = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const pathname = usePathname();
   const { cartItems } = useCart();
-
   const { selector } = useRedux();
 
   useEffect(() => {
@@ -35,7 +34,6 @@ const Header = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Searching for:", searchQuery);
     setIsSearchOpen(false);
   };
 
@@ -145,26 +143,29 @@ const Header = () => {
           </Button>
 
           {/* Account */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:inline-flex"
-            asChild
-          >
-            <Link href="/account">
-              <User className="h-[1.2rem] w-[1.2rem]" />
-              <span className="sr-only">Account</span>
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:inline-flex"
-            onClick={() => setIsLoginModalOpen(true)}
-          >
-            <span className="sr-only">User account</span>
-            <User className="h-5 w-5" />
-          </Button>
+          {selector?.auth.user ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden sm:inline-flex"
+              asChild
+            >
+              <Link href="/account">
+                <User className="h-[1.2rem] w-[1.2rem]" />
+                <span className="sr-only">Account</span>
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden sm:inline-flex"
+              onClick={() => setIsLoginModalOpen(true)}
+            >
+              <span className="sr-only">User account</span>
+              <User className="h-5 w-5" />
+            </Button>
+          )}
 
           {/* Theme Toggle */}
           <ModeToggle />
