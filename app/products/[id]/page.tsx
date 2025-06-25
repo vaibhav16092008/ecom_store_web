@@ -1,50 +1,55 @@
-// "use client";
-
+"use client";
+import React from "react";
 import { notFound } from "next/navigation";
 import { featuredProducts } from "@/data/products";
 import ProductDetails from "@/components/products/ProductDetails";
 import RelatedProducts from "@/components/products/RelatedProducts";
+import { useEffect, useState } from "react";
+import { getRequest } from "@/connections/apiCall";
+import { apiEndPoint } from "@/connections/endPoints";
 
-interface ProductPageProps {
+interface paramType {
   params: { id: string };
 }
 
-// ✅ This generates all static params (for SSG)
-export async function generateStaticParams() {
-  return featuredProducts.map((product) => ({
-    id: product.id,
-  }));
-}
+const page = ({ params }: paramType) => {
+  console.log("string", params);
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const getProduct = async () => {
+    setLoading(true);
 
-export function generateMetadata({ params }: ProductPageProps) {
-  const product = featuredProducts.find((p) => p.id === params.id);
-
-  if (!product) {
-    return {
-      title: "Product Not Found | EcomStore",
-    };
-  }
-
-  return {
-    title: `${product.name} | EcomStore`,
-    description: product.description,
+    try {
+      const response = await getRequest(
+        apiEndPoint.getProducts + "/" + params.id
+      );
+      if (response?.status === 200) {
+        setProduct(response?.data);
+      }
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setLoading(false);
+    }
   };
-}
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const product = featuredProducts.find((p) => p.id === params.id);
+  useEffect(() => {
+    getProduct();
+  }, []);
 
-  if (!product) {
-    return notFound();
-  }
+  // if (!product) {
+  //   return notFound();
+  // }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <ProductDetails product={product} />
       <RelatedProducts
-        currentProductId={product.id}
-        category={product.category}
+        currentProductId={product?.id}
+        category={product?.category}
       />
     </div>
   );
-}
+};
+
+export default page;

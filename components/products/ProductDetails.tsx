@@ -3,7 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Minus, Plus, Heart, Share2, ShoppingBag, Check, ChevronRight } from "lucide-react";
+import {
+  Star,
+  Minus,
+  Plus,
+  Heart,
+  Share2,
+  ShoppingBag,
+  Check,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -21,39 +30,60 @@ interface ProductDetailsProps {
 const ProductDetails = ({ product }: ProductDetailsProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || "");
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || "");
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  
+  const [selectedColor, setSelectedColor] = useState(
+    product?.colors?.[0] || ""
+  );
+  const [isWishlisted, setIsWishlisted] = useState(
+    product?.isInWishlist || false
+  );
+
   const { toast } = useToast();
   const { addToCart } = useCart();
-  
+
+  // Convert price from string to number if needed
+  const price =
+    typeof product?.price === "string"
+      ? parseFloat(product?.price)
+      : product?.price;
+  const discountedPrice =
+    product?.discount > 0 ? price * (1 - product?.discount / 100) : price;
+
   const handleAddToCart = () => {
-    addToCart(product, quantity, selectedColor, selectedSize);
-    
+    addToCart(
+      {
+        ...product,
+        price,
+        discountedPrice,
+      },
+      quantity,
+      selectedColor
+    );
+
     toast({
       title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
+      description: `${product?.name} has been added to your cart.`,
     });
   };
-  
+
   const handleToggleWishlist = () => {
     setIsWishlisted(!isWishlisted);
-    
+
     toast({
       title: isWishlisted ? "Removed from wishlist" : "Added to wishlist",
-      description: `${product.name} has been ${isWishlisted ? "removed from" : "added to"} your wishlist.`,
+      description: `${product?.name} has been ${
+        isWishlisted ? "removed from" : "added to"
+      } your wishlist.`,
     });
   };
-  
+
   const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
     }
   };
-  
+
   const increaseQuantity = () => {
-    if (quantity < product.stock) {
+    if (quantity < product?.stock) {
       setQuantity(quantity + 1);
     }
   };
@@ -66,11 +96,16 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           Home
         </Link>
         <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
-        <Link href="/products" className="text-muted-foreground hover:text-foreground">
+        <Link
+          href="/products"
+          className="text-muted-foreground hover:text-foreground"
+        >
           Products
         </Link>
         <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
-        <span className="text-foreground font-medium truncate">{product.name}</span>
+        <span className="text-foreground font-medium truncate">
+          {product?.name}
+        </span>
       </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
@@ -78,27 +113,27 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
         <div className="space-y-4">
           <div className="relative aspect-square overflow-hidden bg-secondary/20 rounded-lg">
             <Image
-              src={product.images[selectedImage]}
-              alt={product.name}
+              src={product?.images[selectedImage]}
+              alt={product?.name}
               fill
               className="object-cover object-center"
               sizes="(max-width: 768px) 100vw, 50vw"
               priority
             />
-            {product.discount > 0 && (
+            {product?.discount > 0 && (
               <Badge className="absolute top-4 left-4 z-10 bg-destructive text-destructive-foreground">
-                {product.discount}% OFF
+                {product?.discount}% OFF
               </Badge>
             )}
-            {product.isNew && (
+            {product?.isNew && (
               <Badge className="absolute top-4 right-4 z-10">NEW</Badge>
             )}
           </div>
 
           {/* Thumbnail navigation */}
-          {product.images.length > 1 && (
+          {product?.images.length > 1 && (
             <div className="flex gap-3 overflow-x-auto pb-1">
-              {product.images.map((image, index) => (
+              {product?.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
@@ -111,7 +146,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                 >
                   <Image
                     src={image}
-                    alt={`${product.name} thumbnail ${index + 1}`}
+                    alt={`${product?.name} thumbnail ${index + 1}`}
                     fill
                     className="object-cover"
                   />
@@ -127,9 +162,9 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-muted-foreground">
-                {product.brand}
+                {product?.brand?.name || "No brand"}
               </p>
-              
+
               <div className="flex items-center">
                 <div className="flex items-center">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -137,7 +172,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                       key={i}
                       className={cn(
                         "h-4 w-4",
-                        i < Math.floor(product.rating)
+                        i < Math.floor(product?.rating)
                           ? "fill-primary text-primary"
                           : "fill-muted text-muted"
                       )}
@@ -145,33 +180,37 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground ml-1.5">
-                  ({product.reviewCount})
+                  ({product?.reviewCount})
                 </span>
               </div>
             </div>
 
-            <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>
-            
+            <h1 className="text-3xl font-bold tracking-tight">
+              {product?.name}
+            </h1>
+
             <div className="flex items-center mt-2">
-              {product.discount > 0 ? (
+              {product?.discount > 0 ? (
                 <>
                   <span className="text-2xl font-bold">
-                    ${product.discountedPrice.toFixed(2)}
+                    ${discountedPrice.toFixed(2)}
                   </span>
                   <span className="text-lg line-through text-muted-foreground ml-2">
-                    ${product.price.toFixed(2)}
+                    {/* ${price.toFixed(2)} */}
                   </span>
                 </>
               ) : (
-                <span className="text-2xl font-bold">
-                  ${product.price.toFixed(2)}
-                </span>
+                <span className="text-2xl font-bold">${price}</span>
               )}
             </div>
 
             <p className="flex items-center mt-2 text-sm">
-              <span className={product.stock > 0 ? "text-green-600" : "text-destructive"}>
-                {product.stock > 0 ? (
+              <span
+                className={
+                  product?.stock > 0 ? "text-green-600" : "text-destructive"
+                }
+              >
+                {product?.stock > 0 ? (
                   <>
                     <Check className="inline-block mr-1 h-4 w-4" />
                     In Stock
@@ -180,9 +219,9 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                   "Out of Stock"
                 )}
               </span>
-              {product.stock > 0 && product.stock < 10 && (
+              {product?.stock > 0 && product?.stock < 10 && (
                 <span className="ml-2 text-amber-600">
-                  (Only {product.stock} left)
+                  (Only {product?.stock} left)
                 </span>
               )}
             </p>
@@ -190,7 +229,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
 
           <div className="space-y-6">
             {/* Color Selection */}
-            {product.colors && product.colors.length > 0 && (
+            {product?.colors && product?.colors.length > 0 && (
               <div>
                 <h3 className="text-sm font-medium mb-3">Color</h3>
                 <RadioGroup
@@ -198,11 +237,11 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                   onValueChange={setSelectedColor}
                   className="flex flex-wrap gap-3"
                 >
-                  {product.colors.map((color) => (
+                  {product?.colors.map((color) => (
                     <div key={color} className="flex items-center space-x-2">
-                      <RadioGroupItem 
-                        value={color} 
-                        id={`color-${color}`} 
+                      <RadioGroupItem
+                        value={color}
+                        id={`color-${color}`}
                         className="peer sr-only"
                       />
                       <Label
@@ -210,39 +249,6 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                         className="peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary peer-data-[state=checked]:ring-offset-2 rounded-md border px-3 py-2 cursor-pointer"
                       >
                         {color}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
-            )}
-
-            {/* Size Selection */}
-            {product.sizes && product.sizes.length > 0 && (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-medium">Size</h3>
-                  <Button variant="link" size="sm" className="h-auto p-0">
-                    Size Guide
-                  </Button>
-                </div>
-                <RadioGroup
-                  defaultValue={selectedSize}
-                  onValueChange={setSelectedSize}
-                  className="flex flex-wrap gap-3"
-                >
-                  {product.sizes.map((size) => (
-                    <div key={size} className="flex items-center space-x-2">
-                      <RadioGroupItem 
-                        value={size} 
-                        id={`size-${size}`} 
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor={`size-${size}`}
-                        className="peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground min-w-[60px] text-center rounded-md border px-3 py-2 cursor-pointer"
-                      >
-                        {size}
                       </Label>
                     </div>
                   ))}
@@ -270,7 +276,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                   size="icon"
                   className="h-10 w-10 rounded-none"
                   onClick={increaseQuantity}
-                  disabled={quantity >= product.stock}
+                  disabled={quantity >= product?.stock}
                 >
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">Increase</span>
@@ -284,7 +290,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                 size="lg"
                 className="flex-1 gap-2"
                 onClick={handleAddToCart}
-                disabled={product.stock === 0}
+                disabled={product?.stock === 0}
               >
                 <ShoppingBag className="h-5 w-5" />
                 Add to Cart
@@ -295,7 +301,9 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                 className={cn(isWishlisted && "text-destructive")}
                 onClick={handleToggleWishlist}
               >
-                <Heart className={cn("h-5 w-5", isWishlisted && "fill-current")} />
+                <Heart
+                  className={cn("h-5 w-5", isWishlisted && "fill-current")}
+                />
                 <span className="sr-only md:not-sr-only md:ml-2">
                   {isWishlisted ? "Added to Wishlist" : "Add to Wishlist"}
                 </span>
@@ -315,31 +323,24 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                 <TabsTrigger value="features">Features</TabsTrigger>
                 <TabsTrigger value="specifications">Specifications</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="description" className="pt-4">
-                <p className="text-muted-foreground">{product.description}</p>
+                <p className="text-muted-foreground">{product?.description}</p>
               </TabsContent>
-              
+
               <TabsContent value="features" className="pt-4">
                 <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                  {product.features?.map((feature, index) => (
+                  {product?.features?.map((feature, index) => (
                     <li key={index}>{feature}</li>
                   ))}
                 </ul>
               </TabsContent>
-              
+
               <TabsContent value="specifications" className="pt-4">
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                  {product.specifications ? (
-                    Object.entries(product.specifications).map(([key, value], index) => (
-                      <div key={index} className={index % 2 === 0 ? "bg-muted/50 p-2" : "p-2"}>
-                        <span className="font-medium">{key}:</span>{" "}
-                        <span className="text-muted-foreground">{value}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-muted-foreground col-span-2">No specifications available.</p>
-                  )}
+                  <p className="text-muted-foreground col-span-2">
+                    No specifications available.
+                  </p>
                 </div>
               </TabsContent>
             </Tabs>

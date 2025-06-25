@@ -1,7 +1,7 @@
 export interface Product {
   id: string;
   name: string;
-  brand: string;
+  brand: any;
   category: string;
   description: string;
   price: number;
@@ -15,6 +15,7 @@ export interface Product {
   sizes?: string[];
   stock: number;
   features?: string[];
+  isInWishlist: Boolean;
   specifications?: {
     [key: string]: string;
   };

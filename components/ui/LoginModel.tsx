@@ -3,6 +3,11 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CircleX } from "lucide-react";
+import { postRequest } from "@/connections/apiCall";
+import { apiEndPoint } from "@/connections/endPoints";
+import { useToast } from "@/hooks/use-toast";
+import { useRedux } from "@/hooks/useSelect";
+import { addUser } from "@/redux/slices/AuthSlice";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -12,7 +17,12 @@ interface LoginModalProps {
 const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const { dispatch } = useRedux();
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -35,9 +45,51 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     };
   }, [isOpen, onClose]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log(isLogin ? "Logging in" : "Signing up", { email, password });
+    setLoading(true);
+    const payload = isLogin
+      ? {
+          userName: email,
+          password,
+        }
+      : {
+          name,
+          email,
+          password,
+          mobile,
+        };
+
+    try {
+      const response = await postRequest(apiEndPoint.login, payload);
+      console.log(response, "eeee");
+      if (response?.status === 200) {
+        dispatch(addUser(response?.data));
+        toast({
+          title: "Success!",
+          description: "Login Succssfull",
+        });
+        onClose();
+        setEmail("");
+        setPassword("");
+        setName("");
+        setMobile("");
+      } else {
+        toast({
+          title: "Error",
+          description: response?.response?.data?.message || "Error",
+        });
+      }
+    } catch (error: any) {
+      console.log("error", error);
+      toast({
+        title: "Error!",
+        description: error?.message,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -83,21 +135,59 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
+              {!isLogin && (
+                <>
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="Name"
+                      className="block text-sm font-medium text-gray-900 dark:text-gray-100"
+                    >
+                      Name
+                    </label>
+                    <input
+                      id="name"
+                      type="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="w-full px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-black border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all"
+                      placeholder="eg: John Carter"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="Name"
+                      className="block text-sm font-medium text-gray-900 dark:text-gray-100"
+                    >
+                      Mobile
+                    </label>
+                    <input
+                      id="mobile"
+                      type="mobile"
+                      value={mobile}
+                      onChange={(e) => setMobile(e.target.value)}
+                      required
+                      className="w-full px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-black border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all"
+                      placeholder="eg: 1234567890"
+                    />
+                  </div>
+                </>
+              )}
               <div className="space-y-1">
                 <label
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-900 dark:text-gray-100"
                 >
-                  Email Address
+                  Email Address or Username
                 </label>
                 <input
                   id="email"
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-black border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all"
-                  placeholder="your@email.com"
+                  placeholder="your@email.com or username"
                 />
               </div>
 
@@ -116,7 +206,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   required
                   className="w-full px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-black border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all"
                   placeholder="••••••••"
-                  minLength={6}
+                  minLength={4}
                 />
               </div>
 
@@ -140,9 +230,14 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
               <Button
                 type="submit"
+                disabled={loading}
                 className="w-full h-12 bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 rounded-lg transition-all transform hover:scale-[1.01] active:scale-[0.99]"
               >
-                {isLogin ? "Sign in" : "Create account"}
+                {loading
+                  ? "Loading..."
+                  : isLogin
+                  ? "Sign in"
+                  : "Create account"}
               </Button>
             </form>
 
