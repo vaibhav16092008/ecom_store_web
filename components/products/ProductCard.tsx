@@ -19,16 +19,26 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, className }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
-  const { addToWishlist } = useWishlist();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  const price =
+    typeof product.price === "string"
+      ? parseFloat(product.price)
+      : product.price;
+  const discountedPrice =
+    product.discount > 0 ? price * (1 - product.discount / 100) : price;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    addToCart(product);
+    addToCart({
+      ...product,
+      price,
+      discountedPrice,
+    });
 
     toast({
       title: "Added to cart",
@@ -40,14 +50,23 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    setIsWishlisted(!isWishlisted);
-    addToWishlist(product);
-    toast({
-      title: isWishlisted ? "Removed from wishlist" : "Added to wishlist",
-      description: `${product.name} has been ${
-        isWishlisted ? "removed from" : "added to"
-      } your wishlist.`,
-    });
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+      toast({
+        title: "Removed from wishlist",
+        description: `${product.name} has been removed from your wishlist.`,
+      });
+    } else {
+      addToWishlist({
+        ...product,
+        price,
+        discountedPrice,
+      });
+      toast({
+        title: "Added to wishlist",
+        description: `${product.name} has been added to your wishlist.`,
+      });
+    }
   };
 
   return (
@@ -104,14 +123,17 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
                 variant="outline"
                 className={cn(
                   "rounded-full bg-white/20 backdrop-blur-sm border-white/30",
-                  isWishlisted && "text-destructive"
+                  isInWishlist(product.id) && "text-destructive"
                 )}
                 onClick={handleToggleWishlist}
               >
                 <Heart
-                  className={cn("h-4 w-4", isWishlisted && "fill-current")}
+                  className={cn(
+                    "h-4 w-4",
+                    isInWishlist(product.id) && "fill-current"
+                  )}
                 />
-                <span className="sr-only">Add to wishlist</span>
+                <span className="sr-only">Toggle wishlist</span>
               </Button>
             </div>
           </div>
@@ -134,27 +156,27 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
               ))}
             </div>
             <span className="text-xs text-muted-foreground ml-1">
-              ({product.reviewCount})
+              ({product.reviewCount || 0})
             </span>
           </div>
 
           <h3 className="font-medium text-sm truncate">{product.name}</h3>
           <p className="text-xs text-muted-foreground mb-2 truncate">
-            {product.brand}
+            {product.brand?.name || "No brand"}
           </p>
 
           <div className="flex items-center">
             {product.discount > 0 ? (
               <>
                 <span className="font-semibold">
-                  ${product.discountedPrice.toFixed(2)}
+                  ${discountedPrice.toFixed(2)}
                 </span>
                 <span className="text-muted-foreground text-sm line-through ml-2">
-                  ${product.price.toFixed(2)}
+                  ${price.toFixed(2)}
                 </span>
               </>
             ) : (
-              <span className="font-semibold">${product.price.toFixed(2)}</span>
+              <span className="font-semibold">${price.toFixed(2)}</span>
             )}
           </div>
         </div>

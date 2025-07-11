@@ -12,14 +12,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ChevronDown, ChevronUp, Filter, X } from "lucide-react";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
   SheetFooter,
-  SheetClose
+  SheetClose,
 } from "@/components/ui/sheet";
 
 const categories = [
@@ -32,7 +32,7 @@ const categories = [
 ];
 
 const brands = [
-  { id: "luxemart", label: "Luxemart" },
+  { id: "EcomStore", label: "EcomStore" },
   { id: "sonicpro", label: "SonicPro" },
   { id: "chrono", label: "Chrono" },
   { id: "safeguard", label: "SafeGuard" },
@@ -52,7 +52,9 @@ const ProductFilters = () => {
     if (checked) {
       setSelectedCategories([...selectedCategories, categoryId]);
     } else {
-      setSelectedCategories(selectedCategories.filter(id => id !== categoryId));
+      setSelectedCategories(
+        selectedCategories.filter((id) => id !== categoryId)
+      );
     }
   };
 
@@ -60,7 +62,7 @@ const ProductFilters = () => {
     if (checked) {
       setSelectedBrands([...selectedBrands, brandId]);
     } else {
-      setSelectedBrands(selectedBrands.filter(id => id !== brandId));
+      setSelectedBrands(selectedBrands.filter((id) => id !== brandId));
     }
   };
 
@@ -92,7 +94,9 @@ const ProductFilters = () => {
       {/* Categories */}
       <Accordion type="single" collapsible defaultValue="categories">
         <AccordionItem value="categories" className="border-none">
-          <AccordionTrigger className="py-2 font-semibold">Categories</AccordionTrigger>
+          <AccordionTrigger className="py-2 font-semibold">
+            Categories
+          </AccordionTrigger>
           <AccordionContent className="pt-2 pb-0 space-y-2">
             {categories.map((category) => (
               <div key={category.id} className="flex items-center space-x-2">
@@ -118,7 +122,9 @@ const ProductFilters = () => {
       {/* Brands */}
       <Accordion type="single" collapsible defaultValue="brands">
         <AccordionItem value="brands" className="border-none">
-          <AccordionTrigger className="py-2 font-semibold">Brands</AccordionTrigger>
+          <AccordionTrigger className="py-2 font-semibold">
+            Brands
+          </AccordionTrigger>
           <AccordionContent className="pt-2 pb-0 space-y-2">
             {brands.map((brand) => (
               <div key={brand.id} className="flex items-center space-x-2">
@@ -144,7 +150,9 @@ const ProductFilters = () => {
       {/* Customer Rating */}
       <Accordion type="single" collapsible defaultValue="rating">
         <AccordionItem value="rating" className="border-none">
-          <AccordionTrigger className="py-2 font-semibold">Customer Rating</AccordionTrigger>
+          <AccordionTrigger className="py-2 font-semibold">
+            Customer Rating
+          </AccordionTrigger>
           <AccordionContent className="pt-2 pb-0 space-y-2">
             {[4, 3, 2, 1].map((rating) => (
               <div key={rating} className="flex items-center space-x-2">

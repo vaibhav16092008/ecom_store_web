@@ -7,13 +7,14 @@ import Footer from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { Toaster } from "@/components/ui/toaster";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { ClientBody } from "./ClientBody";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Luxemart | Premium Shopping Experience",
+  title: "EcomStore | Premium Shopping Experience",
   description:
-    "Discover premium products at Luxemart - your ultimate shopping destination",
+    "Discover premium products at EcomStore - your ultimate shopping destination",
 };
 
 export default function RootLayout({
@@ -24,23 +25,25 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <CartProvider>
-            <WishlistProvider>
-              <div className="flex flex-col min-h-screen">
-                <Header />
-                <div className="flex-grow">{children}</div>
-                <Footer />
-                <Toaster />
-              </div>
-            </WishlistProvider>
-          </CartProvider>
-        </ThemeProvider>
+        <ClientBody>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <CartProvider>
+              <WishlistProvider>
+                <div className="flex flex-col min-h-screen">
+                  <Header />
+                  <div className="flex-grow">{children}</div>
+                  <Footer />
+                  <Toaster />
+                </div>
+              </WishlistProvider>
+            </CartProvider>
+          </ThemeProvider>
+        </ClientBody>
       </body>
     </html>
   );
